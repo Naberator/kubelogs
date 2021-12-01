@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+
+RED='\033[0;31m'
+NC='\033[0m'
+myuser=$USER
+kubeuser=${myuser/./-}
+NAMESPACE=<<<<<---- ENTER NAMESPACE HERE ---->>>>>
+
+pods=( $(kubectl get pods --namespace=${NAMESPACE} | grep -Eo '^.*'${kubeuser}'[^ ]+') )
+
+createmenu ()
+{
+  if [ $# -eq "0" ]; then
+    echo -e "${RED}NO PODS BUDDY"
+    return 1
+  fi
+  echo -e "${RED} *** PLEASE SELECT POD *** ${NC}"
+  select option; do # in "$@" is the default
+    if [ "$REPLY" -eq "$#" ];
+    then
+      echo "Exiting..."
+      break;
+    elif [ 1 -le "$REPLY" ] && [ "$REPLY" -le $(($#-1)) ];
+    then
+      selectedpod=$option
+      kubectl logs --namespace=${NAMESPACE} ${selectedpod} | less
+      break;
+    else
+      echo "Incorrect Input: Select a number 1-$#"
+    fi
+  done
+}
+
+createmenu "${pods[@]}"
