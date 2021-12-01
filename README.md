@@ -1,2 +1,2 @@
 # kubelogs
-Just a simple script for log readings in kubernetes
+Just a simple personal script for reading logs in kubernetes easily
